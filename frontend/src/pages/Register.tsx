@@ -15,12 +15,31 @@ export const Register: React.FC = () => {
     const [role, setRole] = useState<'STUDENT' | 'ADMIN'>('STUDENT');
     const [loading, setLoading] = useState(false);
 
+    const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
     const { signUp } = useAuth();
     const { showToast } = useUI();
     const navigate = useNavigate();
 
+    const validate = () => {
+        const newErrors: { [key: string]: string } = {};
+        if (!name) newErrors.name = 'Full name is required';
+        if (!email) newErrors.email = 'Email address is required';
+        else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = 'Email is invalid';
+        if (!password) newErrors.password = 'Password is required';
+        else if (password.length < 6) newErrors.password = 'Password must be at least 6 characters';
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!validate()) {
+            showToast('Please fix the errors in the form', 'error');
+            return;
+        }
+
         setLoading(true);
         try {
             await signUp(email, password, name, role);
@@ -39,34 +58,48 @@ export const Register: React.FC = () => {
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} style={{ width: '100%', maxWidth: 400 }}>
                 <GlassCard hoverEffect={false}>
                     <div style={{ textAlign: 'center', marginBottom: 'var(--space-4)' }}>
+                        <img
+                            src="/favicon.png"
+                            alt="Logo"
+                            style={{ width: 48, height: 48, borderRadius: 12, marginBottom: 'var(--space-3)' }}
+                        />
                         <h2 style={{ fontSize: '1.75rem', marginBottom: 'var(--space-1)' }}>Create Account</h2>
                         <p style={{ color: 'var(--color-text-muted)', fontSize: 14 }}>Join thousands of students and admins</p>
                     </div>
 
-                    <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+                    <form onSubmit={handleRegister} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
                         <Input
                             label="Full Name"
                             type="text"
                             placeholder="John Doe"
                             value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            required
+                            onChange={(e) => {
+                                setName(e.target.value);
+                                if (errors.name) setErrors({ ...errors, name: '' });
+                            }}
+                            error={errors.name}
                         />
                         <Input
                             label="Email Address"
                             type="email"
                             placeholder="you@example.com"
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
+                            onChange={(e) => {
+                                setEmail(e.target.value);
+                                if (errors.email) setErrors({ ...errors, email: '' });
+                            }}
+                            error={errors.email}
                         />
                         <Input
                             label="Password"
                             type="password"
                             placeholder="••••••••"
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
+                            onChange={(e) => {
+                                setPassword(e.target.value);
+                                if (errors.password) setErrors({ ...errors, password: '' });
+                            }}
+                            error={errors.password}
                         />
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>

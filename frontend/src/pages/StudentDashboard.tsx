@@ -7,6 +7,7 @@ import { PlayCircle, Trophy, Award, Clock, Download, Hash, Calendar, Key } from 
 import { Input } from '../components/ui/Input';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useUI } from '../contexts/UIContext';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
@@ -25,7 +26,9 @@ const mockLeaderboard = [
 
 export const StudentDashboard: React.FC = () => {
     const navigate = useNavigate();
+    const [errors, setErrors] = useState<{ [key: string]: string }>({});
     const { user } = useAuth();
+    const { showToast } = useUI();
     const [joinCode, setJoinCode] = useState('');
     const [joining, setJoining] = useState(false);
 
@@ -64,9 +67,13 @@ export const StudentDashboard: React.FC = () => {
 
     const handleJoinExam = () => {
         if (!joinCode) return;
+        if (joinCode.length < 5) {
+            setErrors({ joinCode: 'Code must be at least 5 characters' });
+            return;
+        }
         setJoining(true);
         setTimeout(() => {
-            alert(`Succesfully joined exam: ${joinCode.toUpperCase()}. It will appear in your upcoming schedule.`);
+            showToast(`Successfully joined exam: ${joinCode}`, 'success');
             setJoining(false);
             setJoinCode('');
         }, 1500);
@@ -80,8 +87,15 @@ export const StudentDashboard: React.FC = () => {
                 <div className="container" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 'var(--space-4)', alignItems: 'start' }}>
 
                     <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }}>
-                        <div style={{ marginBottom: 'var(--space-4)' }}>
-                            <h1 style={{ fontSize: '2rem' }}>My Dashboard</h1>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: 'var(--space-4)' }}>
+                            <img
+                                src="/favicon.png"
+                                alt="Logo"
+                                style={{ width: 48, height: 48, borderRadius: 12 }}
+                            />
+                            <div>
+                                <h1 style={{ fontSize: '2rem', margin: 0 }}>My Dashboard</h1>
+                            </div>
                         </div>
 
                         <GlassCard style={{ marginBottom: 'var(--space-6)', background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.1) 0%, rgba(124, 58, 237, 0.1) 100%)', border: '1px solid rgba(79, 70, 229, 0.2)' }}>
@@ -90,16 +104,20 @@ export const StudentDashboard: React.FC = () => {
                                     <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--color-primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                         <Hash size={20} />
                                     </div>
-                                    <div>
+                                    <div style={{ flex: 1 }}>
                                         <h3 style={{ margin: 0 }}>Join Private Exam</h3>
                                         <p style={{ margin: 0, fontSize: 13, color: 'var(--color-text-muted)' }}>Enter the unique 8-character code provided by your teacher to unlock your exam.</p>
                                     </div>
                                 </div>
                                 <div style={{ display: 'flex', gap: 'var(--space-2)', marginTop: 8 }}>
-                                    <Input 
-                                        placeholder="EX: REACT2026" 
+                                    <Input
+                                        placeholder="EX: REACT2026"
                                         value={joinCode}
-                                        onChange={e => setJoinCode(e.target.value.toUpperCase())}
+                                        onChange={e => {
+                                            setJoinCode(e.target.value.toUpperCase());
+                                            if (errors.joinCode) setErrors({ ...errors, joinCode: '' });
+                                        }}
+                                        error={errors.joinCode}
                                         style={{ background: 'var(--color-surface)', fontSize: '1.1rem', fontWeight: 'bold' }}
                                     />
                                     <Button variant="primary" onClick={handleJoinExam} isLoading={joining} disabled={!joinCode} style={{ padding: '0 32px' }}>

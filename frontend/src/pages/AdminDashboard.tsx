@@ -94,9 +94,16 @@ export const AdminDashboard: React.FC = () => {
             <main style={{ flex: 1, padding: 'var(--space-4)' }}>
                 <div className="container">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-4)' }}>
-                        <div>
-                            <h1 style={{ fontSize: '2rem' }}>Admin Dashboard</h1>
-                            <p style={{ color: 'var(--color-text-muted)' }}>Overview of your examination platform.</p>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                            <img
+                                src="/favicon.png"
+                                alt="Logo"
+                                style={{ width: 48, height: 48, borderRadius: 12 }}
+                            />
+                            <div>
+                                <h1 style={{ fontSize: '2rem', margin: 0 }}>Admin Dashboard</h1>
+                                <p style={{ color: 'var(--color-text-muted)', margin: 0 }}>Overview of your examination platform.</p>
+                            </div>
                         </div>
                         <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
                             <Button variant="outline" onClick={downloadPDF}>

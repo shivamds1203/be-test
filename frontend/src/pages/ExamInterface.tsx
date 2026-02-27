@@ -74,8 +74,15 @@ export const ExamInterface: React.FC = () => {
                 alignItems: 'center',
                 position: 'sticky', top: 0, zIndex: 10
             }}>
-                <div style={{ fontWeight: 'bold', fontSize: '1.25rem', fontFamily: 'var(--font-heading)' }}>
-                    Exam <span style={{ color: 'var(--color-primary)' }}>Active</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <img
+                        src="/favicon.png"
+                        alt="Logo"
+                        style={{ width: 32, height: 32, borderRadius: 8 }}
+                    />
+                    <div style={{ fontWeight: 'bold', fontSize: '1.25rem', fontFamily: 'var(--font-heading)' }}>
+                        Exam <span style={{ color: 'var(--color-primary)' }}>Active</span>
+                    </div>
                 </div>
 
                 {/* Animated Timer */}

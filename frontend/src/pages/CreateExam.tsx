@@ -6,9 +6,11 @@ import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Plus, Trash2, Save, UploadCloud, FileText, Loader2, Calendar, Clock as ClockIcon, Mail, Copy, Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useUI } from '../contexts/UIContext';
 
 export const CreateExam: React.FC = () => {
     const navigate = useNavigate();
+    const { showToast } = useUI();
     const [examData, setExamData] = useState({
         title: '',
         description: '',
@@ -44,7 +46,7 @@ export const CreateExam: React.FC = () => {
     };
 
     const handleAIGeneration = () => {
-        if (!aiTopic) return alert("Please enter a topic for the AI.");
+        if (!aiTopic) return showToast("Please enter a topic for the AI.", "error");
         setIsGenerating(true);
         // Mock AI LLM generation delay
         setTimeout(() => {
@@ -56,6 +58,7 @@ export const CreateExam: React.FC = () => {
             setQuestions([...questions, ...mockAIQuestions]);
             setIsGenerating(false);
             setMode('manual'); // switch back to let them edit the generated questions
+            showToast(`Drafted ${mockAIQuestions.length} questions for ${aiTopic}`, 'success');
         }, 2000);
     };
 
@@ -74,10 +77,10 @@ export const CreateExam: React.FC = () => {
                 setQuestions([...questions, ...mockExtractedQuestions]);
                 setIsGenerating(false);
                 setMode('manual'); // Let user review extracted questions
-                alert(`AI Successfully generated ${mockExtractedQuestions.length} questions based on the theory in ${file.name}!`);
+                showToast(`AI generated ${mockExtractedQuestions.length} questions from ${file.name}`, 'success');
             }, 3000);
         } else {
-            alert("Please upload a valid .pdf file.");
+            showToast("Please upload a valid .pdf file.", "error");
         }
     };
 
@@ -85,15 +88,15 @@ export const CreateExam: React.FC = () => {
         console.log("Initiating payment process...");
 
         if (!examData.title) {
-            return alert("Please enter an Exam Title before publishing.");
+            return showToast("Please enter an Exam Title before publishing.", "error");
         }
         if (questions.length === 0) {
-            return alert("Please add at least one question to your exam.");
+            return showToast("Please add at least one question to your exam.", "error");
         }
 
         if (typeof (window as any).Razorpay === 'undefined') {
             console.error("Razorpay SDK not found on window object.");
-            alert("Error: Razorpay Payment Gateway (SDK) is not loaded. Please ensure you have an active internet connection and that no ad-blockers are preventing the payment script from running.");
+            showToast("Razorpay Payment Gateway is not loaded. Please check your connection.", "error");
             return;
         }
 
@@ -107,6 +110,7 @@ export const CreateExam: React.FC = () => {
                 handler: function (response: any) {
                     console.log("Payment Success: ", response);
                     saveExam();
+                    showToast("Payment Successful! Exam Published.", "success");
                 },
                 prefill: {
                     name: 'Admin User',
@@ -115,6 +119,7 @@ export const CreateExam: React.FC = () => {
                 theme: { color: '#4f46e5' },
                 modal: {
                     ondismiss: function () {
+                        showToast("Payment cancelled.", "info");
                         console.log("Payment window closed by user");
                     }
                 }
@@ -125,7 +130,7 @@ export const CreateExam: React.FC = () => {
             rzp.open();
         } catch (err) {
             console.error("Failed to initialize Razorpay:", err);
-            alert("Crisis: Failed to initialize the payment gateway. Check browser console for details.");
+            showToast("Failed to initialize the payment gateway.", "error");
         }
     };
 
@@ -149,7 +154,14 @@ export const CreateExam: React.FC = () => {
             <Navbar />
 
             <main style={{ flex: 1, padding: 'var(--space-4)', maxWidth: 800, margin: '0 auto', width: '100%' }}>
-                <h1 style={{ fontSize: '2rem', marginBottom: 'var(--space-4)' }}>Create New Exam</h1>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: 'var(--space-4)' }}>
+                    <img
+                        src="/favicon.png"
+                        alt="Logo"
+                        style={{ width: 48, height: 48, borderRadius: 12 }}
+                    />
+                    <h1 style={{ fontSize: '2rem', margin: 0 }}>Create New Exam</h1>
+                </div>
 
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
                     <GlassCard style={{ marginBottom: 'var(--space-4)', display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>

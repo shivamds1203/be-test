@@ -35,20 +35,11 @@ export const Navbar: React.FC = () => {
             }}
         >
             <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: 8,
-                    background: 'var(--color-primary)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'white',
-                    fontWeight: 'bold',
-                    fontSize: 18
-                }}>
-                    E
-                </div>
+                <img
+                    src="/favicon.png"
+                    alt="Logo"
+                    style={{ width: 32, height: 32, borderRadius: 8, objectFit: 'cover' }}
+                />
                 <span style={{ fontSize: '1.25rem', fontWeight: 700, fontFamily: 'var(--font-heading)' }}>
                     be-<span className="text-gradient">test</span>
                 </span>
