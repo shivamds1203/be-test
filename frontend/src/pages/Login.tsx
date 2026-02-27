@@ -16,7 +16,7 @@ export const Login: React.FC = () => {
     const { login } = useAuth();
     const navigate = useNavigate();
 
-    const isGoogleConfigured = import.meta.env.VITE_GOOGLE_CLIENT_ID && import.meta.env.VITE_GOOGLE_CLIENT_ID !== 'YOUR_GOOGLE_CLIENT_ID' && import.meta.env.VITE_GOOGLE_CLIENT_ID !== 'dummy-client-id';
+    const isGoogleConfigured = process.env.REACT_APP_GOOGLE_CLIENT_ID && process.env.REACT_APP_GOOGLE_CLIENT_ID !== 'YOUR_GOOGLE_CLIENT_ID' && process.env.REACT_APP_GOOGLE_CLIENT_ID !== 'dummy-client-id';
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -76,17 +76,17 @@ export const Login: React.FC = () => {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
                             <label style={{ fontSize: 14, fontWeight: 500 }}>Login as...</label>
                             <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
-                                <Button 
-                                    type="button" 
-                                    variant={role === 'STUDENT' ? 'primary' : 'outline'} 
+                                <Button
+                                    type="button"
+                                    variant={role === 'STUDENT' ? 'primary' : 'outline'}
                                     onClick={() => setRole('STUDENT')}
                                     style={{ flex: 1 }}
                                 >
                                     Student
                                 </Button>
-                                <Button 
-                                    type="button" 
-                                    variant={role === 'ADMIN' ? 'primary' : 'outline'} 
+                                <Button
+                                    type="button"
+                                    variant={role === 'ADMIN' ? 'primary' : 'outline'}
                                     onClick={() => setRole('ADMIN')}
                                     style={{ flex: 1 }}
                                 >

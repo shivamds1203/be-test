@@ -9,11 +9,11 @@ import { useNavigate } from 'react-router-dom';
 
 export const CreateExam: React.FC = () => {
     const navigate = useNavigate();
-    const [examData, setExamData] = useState({ 
-        title: '', 
-        description: '', 
-        timeLimitMinutes: 60, 
-        marksPerQuestion: 1, 
+    const [examData, setExamData] = useState({
+        title: '',
+        description: '',
+        timeLimitMinutes: 60,
+        marksPerQuestion: 1,
         price: 100,
         scheduleDate: '',
         scheduleTime: '',
@@ -26,7 +26,7 @@ export const CreateExam: React.FC = () => {
     const [mode, setMode] = useState<'manual' | 'ai' | 'pdf'>('manual');
     const [aiTopic, setAiTopic] = useState('');
     const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-    const [razorpayLoaded, setRazorpayLoaded] = useState(false);
+    const [, setRazorpayLoaded] = useState(false);
 
     useEffect(() => {
         const script = document.createElement('script');
@@ -64,7 +64,7 @@ export const CreateExam: React.FC = () => {
         if (file && file.type === 'application/pdf') {
             setUploadedFile(file);
             setIsGenerating(true);
-            
+
             // Mock PDF Parsing and Question Extraction Delay
             setTimeout(() => {
                 const mockExtractedQuestions = [
@@ -83,7 +83,7 @@ export const CreateExam: React.FC = () => {
 
     const handlePaymentAndPublish = () => {
         console.log("Initiating payment process...");
-        
+
         if (!examData.title) {
             return alert("Please enter an Exam Title before publishing.");
         }
@@ -99,7 +99,7 @@ export const CreateExam: React.FC = () => {
 
         try {
             const options = {
-                key: import.meta.env.VITE_RAZORPAY_KEY_ID?.replace(/"/g, '') || 'rzp_test_SL3IjBDPgFjTAS',
+                key: process.env.REACT_APP_RAZORPAY_KEY_ID?.replace(/"/g, '') || 'rzp_test_SL3IjBDPgFjTAS',
                 amount: examData.price * 100, // paise
                 currency: 'INR',
                 name: 'be-test Exams',
@@ -114,7 +114,7 @@ export const CreateExam: React.FC = () => {
                 },
                 theme: { color: '#4f46e5' },
                 modal: {
-                    ondismiss: function() {
+                    ondismiss: function () {
                         console.log("Payment window closed by user");
                     }
                 }
@@ -156,30 +156,30 @@ export const CreateExam: React.FC = () => {
                         <h3>Exam Settings</h3>
                         <Input label="Exam Title" placeholder="Final Semester Examination" value={examData.title} onChange={e => setExamData({ ...examData, title: e.target.value })} />
                         <Input label="Description" placeholder="Theoretical concepts of physics..." value={examData.description} onChange={e => setExamData({ ...examData, description: e.target.value })} />
-                        
+
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-3)' }}>
-                            <Input 
-                                type="date" 
-                                label="Schedule Date" 
+                            <Input
+                                type="date"
+                                label="Schedule Date"
                                 icon={<Calendar size={18} />}
-                                value={examData.scheduleDate} 
-                                onChange={e => setExamData({ ...examData, scheduleDate: e.target.value })} 
+                                value={examData.scheduleDate}
+                                onChange={e => setExamData({ ...examData, scheduleDate: e.target.value })}
                             />
-                            <Input 
-                                type="time" 
-                                label="Start Time" 
+                            <Input
+                                type="time"
+                                label="Start Time"
                                 icon={<ClockIcon size={18} />}
-                                value={examData.scheduleTime} 
-                                onChange={e => setExamData({ ...examData, scheduleTime: e.target.value })} 
+                                value={examData.scheduleTime}
+                                onChange={e => setExamData({ ...examData, scheduleTime: e.target.value })}
                             />
                         </div>
 
-                        <Input 
-                            label="Direct Invite (Student Email IDs)" 
-                            placeholder="student1@gmail.com, student2@gmail.com" 
+                        <Input
+                            label="Direct Invite (Student Email IDs)"
+                            placeholder="student1@gmail.com, student2@gmail.com"
                             icon={<Mail size={18} />}
-                            value={examData.studentEmails} 
-                            onChange={e => setExamData({ ...examData, studentEmails: e.target.value })} 
+                            value={examData.studentEmails}
+                            onChange={e => setExamData({ ...examData, studentEmails: e.target.value })}
                         />
 
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 'var(--space-3)' }}>
@@ -201,7 +201,7 @@ export const CreateExam: React.FC = () => {
                                 AI Theory-to-Questions (PDF)
                             </Button>
                         </div>
-                        
+
                         {mode === 'ai' && (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
                                 <p style={{ color: 'var(--color-text-muted)' }}>Describe the exam topic, and our AI will generate questions for you.</p>
@@ -217,7 +217,7 @@ export const CreateExam: React.FC = () => {
                                 <FileText size={48} color="var(--color-primary)" style={{ opacity: 0.5 }} />
                                 <h4 style={{ marginBottom: 0 }}>Train AI on your Document</h4>
                                 <p style={{ color: 'var(--color-text-muted)', textAlign: 'center', maxWidth: 400 }}>Upload a PDF containing theory, syllabus, or topics. Our AI will analyze the text and automatically generate relevant multiple-choice questions for your exam.</p>
-                                
+
                                 {isGenerating ? (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--color-primary)', fontWeight: 'bold' }}>
                                         <Loader2 size={24} className="spin" /> AI is reading your document and crafting questions...
@@ -287,8 +287,8 @@ export const CreateExam: React.FC = () => {
                     </div>
 
                     {publishedCode && (
-                        <motion.div 
-                            initial={{ opacity: 0, scale: 0.9 }} 
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                             style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
                         >
@@ -298,7 +298,7 @@ export const CreateExam: React.FC = () => {
                                 </div>
                                 <h2 style={{ marginBottom: 'var(--space-1)' }}>Exam Published!</h2>
                                 <p style={{ color: 'var(--color-text-muted)', marginBottom: 'var(--space-4)' }}>Your exam is scheduled for {examData.scheduleDate} at {examData.scheduleTime}. Share this code with your students:</p>
-                                
+
                                 <div style={{ display: 'flex', gap: 8, background: 'var(--color-surface)', padding: 12, borderRadius: 12, border: '1px solid var(--color-border)', marginBottom: 'var(--space-6)', alignItems: 'center', justifyContent: 'center' }}>
                                     <span style={{ fontSize: '1.5rem', fontWeight: 'bold', letterSpacing: 2, color: 'var(--color-primary)' }}>{publishedCode}</span>
                                     <Button size="sm" variant="ghost" onClick={copyToClipboard}>

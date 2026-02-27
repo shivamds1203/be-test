@@ -12,7 +12,7 @@ import { ResultsScreen } from './pages/ResultsScreen';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import './App.css';
 
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || 'dummy-client-id';
+const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || 'dummy-client-id';
 
 function App() {
   return (

@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Navbar } from '../components/layout/Navbar';
 import { GlassCard } from '../components/ui/GlassCard';
 import { Button } from '../components/ui/Button';
-import { Plus, Users, FileText, DollarSign, TrendingUp, Download, Key, Link as LinkIcon, Copy, Check } from 'lucide-react';
+import { Plus, Users, FileText, DollarSign, TrendingUp, Download, Key, Link as LinkIcon, Copy } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -188,7 +188,7 @@ export const AdminDashboard: React.FC = () => {
                                 <h3 style={{ fontSize: '1.25rem', color: 'var(--color-primary)' }}>Integrity & Performance Report</h3>
                                 <div style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>Generated: {new Date().toLocaleDateString()}</div>
                             </div>
-                            
+
                             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                                 <thead>
                                     <tr style={{ borderBottom: '2px solid var(--color-border)' }}>
@@ -208,7 +208,7 @@ export const AdminDashboard: React.FC = () => {
                                                 <span style={{ fontWeight: 'bold' }}>{result.score}</span> / {result.total}
                                             </td>
                                             <td style={{ padding: 'var(--space-2)' }}>
-                                                <span style={{ 
+                                                <span style={{
                                                     padding: '4px 8px', borderRadius: 4, fontSize: 12, fontWeight: 'bold',
                                                     background: result.status === 'Completed' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
                                                     color: result.status === 'Completed' ? '#10b981' : '#ef4444'
