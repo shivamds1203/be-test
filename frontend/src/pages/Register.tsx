@@ -5,6 +5,7 @@ import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useUI } from '../contexts/UIContext';
 import { GoogleLogin } from '@react-oauth/google';
 
 export const Register: React.FC = () => {
@@ -13,30 +14,24 @@ export const Register: React.FC = () => {
     const [password, setPassword] = useState('');
     const [role, setRole] = useState<'STUDENT' | 'ADMIN'>('STUDENT');
     const [loading, setLoading] = useState(false);
-    const { login } = useAuth();
-    const navigate = useNavigate();
 
-    const isGoogleConfigured = process.env.REACT_APP_GOOGLE_CLIENT_ID && process.env.REACT_APP_GOOGLE_CLIENT_ID !== 'YOUR_GOOGLE_CLIENT_ID' && process.env.REACT_APP_GOOGLE_CLIENT_ID !== 'dummy-client-id';
+    const { signUp } = useAuth();
+    const { showToast } = useUI();
+    const navigate = useNavigate();
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        // Mock API Call
-        setTimeout(() => {
-            login({ id: '2', name, email, role, token: 'mock-jwt-reg' });
+        try {
+            await signUp(email, password, name, role);
+            showToast('Account created successfully! 🎉', 'success');
             navigate(role === 'ADMIN' ? '/admin' : '/dashboard');
+        } catch (error: any) {
+            console.error(error);
+            showToast(error.message || 'Failed to create account', 'error');
+        } finally {
             setLoading(false);
-        }, 1000);
-    };
-
-    const handleGoogleSuccess = async (credentialResponse: any) => {
-        console.log("Google Signup Token:", credentialResponse.credential);
-        setLoading(true);
-        setTimeout(() => {
-            login({ id: '1g', name: 'Google User', email: 'google@example.com', role: role, token: 'mock-jwt-google' });
-            navigate(role === 'ADMIN' ? '/admin' : '/dashboard');
-            setLoading(false);
-        }, 1000);
+        }
     };
 
     return (
@@ -100,26 +95,6 @@ export const Register: React.FC = () => {
                             Create Account
                         </Button>
                     </form>
-
-                    <div style={{ display: 'flex', alignItems: 'center', margin: 'var(--space-4) 0' }}>
-                        <div style={{ flex: 1, height: 1, background: 'var(--color-border)' }} />
-                        <span style={{ margin: '0 12px', fontSize: 12, color: 'var(--color-text-muted)' }}>OR</span>
-                        <div style={{ flex: 1, height: 1, background: 'var(--color-border)' }} />
-                    </div>
-
-                    <div style={{ display: 'flex', justifyContent: 'center' }}>
-                        {isGoogleConfigured ? (
-                            <GoogleLogin
-                                onSuccess={handleGoogleSuccess}
-                                onError={() => console.log('Signup Failed')}
-                                text="signup_with"
-                            />
-                        ) : (
-                            <Button variant="outline" type="button" onClick={() => handleGoogleSuccess({ credential: 'mock-google-token' })} style={{ width: '100%', display: 'flex', gap: 8, justifyContent: 'center' }}>
-                                Sign up with Google (Preview Mode)
-                            </Button>
-                        )}
-                    </div>
 
                     <p style={{ textAlign: 'center', marginTop: 'var(--space-4)', fontSize: 14, color: 'var(--color-text-muted)' }}>
                         Already have an account? <Link to="/login" style={{ color: 'var(--color-primary)', fontWeight: 500 }}>Sign in</Link>

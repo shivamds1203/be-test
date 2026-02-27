@@ -10,6 +10,7 @@ import { StudentDashboard } from './pages/StudentDashboard';
 import { ExamInterface } from './pages/ExamInterface';
 import { ResultsScreen } from './pages/ResultsScreen';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { UIProvider } from './contexts/UIContext';
 import './App.css';
 
 const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || 'dummy-client-id';
@@ -17,23 +18,24 @@ const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || 'dummy-client
 function App() {
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-      <ThemeProvider>
-        <AuthProvider>
-          <Router>
-            <Routes>
-              <Route path="/" element={<Landing />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="/admin/create" element={<CreateExam />} />
-              <Route path="/dashboard" element={<StudentDashboard />} />
-              <Route path="/exam/:id" element={<ExamInterface />} />
-              <Route path="/exam/:id/results" element={<ResultsScreen />} />
-              {/* Aditional routes will be added here */}
-            </Routes>
-          </Router>
-        </AuthProvider>
-      </ThemeProvider>
+      <UIProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <Router>
+              <Routes>
+                <Route path="/" element={<Landing />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/admin/create" element={<CreateExam />} />
+                <Route path="/dashboard" element={<StudentDashboard />} />
+                <Route path="/exam/:id" element={<ExamInterface />} />
+                <Route path="/exam/:id/results" element={<ResultsScreen />} />
+              </Routes>
+            </Router>
+          </AuthProvider>
+        </ThemeProvider>
+      </UIProvider>
     </GoogleOAuthProvider>
   );
 }

@@ -5,41 +5,42 @@ import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useUI } from '../contexts/UIContext';
 import { ArrowLeft } from 'lucide-react';
-import { GoogleLogin } from '@react-oauth/google';
 
 export const Login: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [role, setRole] = useState<'STUDENT' | 'ADMIN'>('STUDENT');
     const [loading, setLoading] = useState(false);
-    const { login } = useAuth();
-    const navigate = useNavigate();
 
-    const isGoogleConfigured = process.env.REACT_APP_GOOGLE_CLIENT_ID && process.env.REACT_APP_GOOGLE_CLIENT_ID !== 'YOUR_GOOGLE_CLIENT_ID' && process.env.REACT_APP_GOOGLE_CLIENT_ID !== 'dummy-client-id';
+    const { signIn, user } = useAuth();
+    const { showToast } = useUI();
+    const navigate = useNavigate();
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        // Mock API Call
-        setTimeout(() => {
-            // Determine role by email check OR explicitly selected role toggle
-            const finalRole = email.includes('admin') ? 'ADMIN' : role;
-            login({ id: '1', name: 'Demo User', email, role: finalRole, token: 'mock-jwt' });
-            navigate(finalRole === 'ADMIN' ? '/admin' : '/dashboard');
+        try {
+            await signIn(email, password);
+            showToast('Welcome back! 👋', 'success');
+            // Role detection happens via AuthContext observer
+        } catch (error: any) {
+            console.error(error);
+            let msg = 'Failed to sign in';
+            if (error.code === 'auth/user-not-found') msg = 'No user found with this email';
+            if (error.code === 'auth/wrong-password') msg = 'Incorrect password';
+            showToast(msg, 'error');
+        } finally {
             setLoading(false);
-        }, 1000);
+        }
     };
 
-    const handleGoogleSuccess = async (credentialResponse: any) => {
-        console.log("Google Login Token:", credentialResponse.credential);
-        setLoading(true);
-        setTimeout(() => {
-            login({ id: '1g', name: 'Google User', email: 'google@example.com', role: role, token: 'mock-jwt-google' });
-            navigate(role === 'ADMIN' ? '/admin' : '/dashboard');
-            setLoading(false);
-        }, 1000);
-    };
+    // Redirect after successful login (handled in effect or by context)
+    React.useEffect(() => {
+        if (user) {
+            navigate(user.role === 'ADMIN' ? '/admin' : '/dashboard');
+        }
+    }, [user, navigate]);
 
     return (
         <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'var(--space-4)' }}>
@@ -73,51 +74,10 @@ export const Login: React.FC = () => {
                             required
                         />
 
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-                            <label style={{ fontSize: 14, fontWeight: 500 }}>Login as...</label>
-                            <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
-                                <Button
-                                    type="button"
-                                    variant={role === 'STUDENT' ? 'primary' : 'outline'}
-                                    onClick={() => setRole('STUDENT')}
-                                    style={{ flex: 1 }}
-                                >
-                                    Student
-                                </Button>
-                                <Button
-                                    type="button"
-                                    variant={role === 'ADMIN' ? 'primary' : 'outline'}
-                                    onClick={() => setRole('ADMIN')}
-                                    style={{ flex: 1 }}
-                                >
-                                    Teacher / Admin
-                                </Button>
-                            </div>
-                        </div>
-
                         <Button type="submit" variant="primary" isLoading={loading} style={{ width: '100%', marginTop: 'var(--space-2)' }}>
                             Sign In
                         </Button>
                     </form>
-
-                    <div style={{ display: 'flex', alignItems: 'center', margin: 'var(--space-4) 0' }}>
-                        <div style={{ flex: 1, height: 1, background: 'var(--color-border)' }} />
-                        <span style={{ margin: '0 12px', fontSize: 12, color: 'var(--color-text-muted)' }}>OR</span>
-                        <div style={{ flex: 1, height: 1, background: 'var(--color-border)' }} />
-                    </div>
-
-                    <div style={{ display: 'flex', justifyContent: 'center' }}>
-                        {isGoogleConfigured ? (
-                            <GoogleLogin
-                                onSuccess={handleGoogleSuccess}
-                                onError={() => console.log('Login Failed')}
-                            />
-                        ) : (
-                            <Button variant="outline" type="button" onClick={() => handleGoogleSuccess({ credential: 'mock-google-token' })} style={{ width: '100%', display: 'flex', gap: 8, justifyContent: 'center' }}>
-                                Sign in with Google (Preview Mode)
-                            </Button>
-                        )}
-                    </div>
 
                     <p style={{ textAlign: 'center', marginTop: 'var(--space-4)', fontSize: 14, color: 'var(--color-text-muted)' }}>
                         Don't have an account? <Link to="/register" style={{ color: 'var(--color-primary)', fontWeight: 500 }}>Sign up</Link>
